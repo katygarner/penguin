@@ -27,21 +27,23 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info:
         [UIImagePickerController.InfoKey : Any]) {
 
+        self.navigationItem.title = "Searching..."
         if let userPickedImage = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
             imageView.image = userPickedImage
             
             guard let ciImage = CIImage(image: userPickedImage) else {
                 fatalError("Cound not convert to CIImage")
             }
-            detect(image: ciImage)
+            DispatchQueue.main.async {
+                self.detect(image: ciImage)
+            }
         }
-        imagePicker.dismiss(animated: true, completion: {})
-
+        imagePicker.dismiss(animated: true, completion: nil)
     }
 
     //MARK: detect Image
     func detect(image: CIImage) {
-        
+
         guard let model = try? VNCoreMLModel(for: Inceptionv3().model) else {
             fatalError("Loading CoreML model failed")
         }
